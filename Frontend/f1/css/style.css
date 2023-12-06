@@ -1,0 +1,101 @@
+/* basic reset to all elements */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* styles to the entire document */
+body {
+  font-family: 'Montserrat', sans-serif;
+  width: 100%;
+  height: 100%;
+}
+
+/* Headings */
+h1,h2 {
+
+}
+
+h3,h4,h5 {
+  color: #342b50;
+}
+
+.big_heading {
+  /* specific heading */
+  font-size: 3rem;
+  font-weight: 600;
+}
+p{
+  color: #212121;
+}
+
+/* Section */
+.container-fluid {
+  padding: 6% 10%;
+  /* left and right space to web page */
+}
+
+.white-section {
+  background-color: #eefffd;
+}
+
+.colored-section {
+  background-color: #00bbac;
+  color: #fff;
+  /* to get white headings in colored section*/
+}
+
+/* Navigation Bar */
+.navbar-brand {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #008080;
+}
+
+.nav-link {
+  font-size: 1.3rem;
+}
+
+.logo {
+  width: 20%;
+}
+
+.btn {
+  background-color: #00bbac;
+  color: white;
+}
+
+/* Cards */
+.card {
+  height: 100%; /* to make all cards of equal size*/
+}
+
+.card-body {
+  width: 100%;
+  padding: 32px;
+}
+
+/* Img */
+.feature-img {
+  /* 10 : 9 ratio */
+  height: 150px;
+  width: 135px;
+  margin: 0 auto 20px;
+}
+
+.image-and-heading{
+  display: flex;
+  align-items: center;
+}
+
+.image-and-heading img {
+  max-width: 100%;
+  margin-right: 10px; /* Adjust as needed */
+}
+
+.flex-box{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
