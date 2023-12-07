@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In and Sign Up Form -Budget Buddy</title>
+    <title>Login and Sign Up Form -Budget Buddy</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://kit.fontawesome.com/92b2f7d924.js" crossorigin="anonymous"></script>
 </head>
@@ -31,29 +31,29 @@
             </div>
         <div class="btn-field">
             <button type="button" id="signupBtn">Sign Up</button>
-            <button type="button" id="signinBtn" class="disable">Sign in</button>
+            <button type="button" id="loginBtn" class="disable">Login</button>
         </div>
         </form>
     </div>
 </div>
 <script>
 let signupBtn = document.getElementById("signupBtn");
-let signinBtn = document.getElementById("signinBtn");
+let loginBtn = document.getElementById("loginBtn");
 let nameField = document.getElementById("nameField");
 let title= document.getElementById("title");
 
-signinBtn.onclick = function(){
+loginBtn.onclick = function(){
     nameField.style.maxHeight = "0";
-    title.innerHTML = "Sign In";
+    title.innerHTML = "Login";
     signupBtn.classList.add("disable");
-    signinBtn.classList.remove("disable");
+    loginBtn.classList.remove("disable");
 }
 
 signupBtn.onclick = function(){
     nameField.style.maxHeight = "60px";
     title.innerHTML = "Sign Up";
     signupBtn.classList.remove("disable");
-    signinBtn.classList.add("disable");
+    loginBtn.classList.add("disable");
 }
 </script>
 </body>
