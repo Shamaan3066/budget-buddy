@@ -4,7 +4,7 @@ function App() {
   return (
     <div className="App">
       <h1>
-        BUDGET-BUDDY
+        BUDGET_BUDDY
       </h1>
     </div>
   );
