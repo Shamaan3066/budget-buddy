@@ -4,7 +4,7 @@ function App() {
   return (
     <div className="App">
       <h1>
-        BUDGET_BUDDY
+        BUDGET_BUDDY...........
       </h1>
     </div>
   );
