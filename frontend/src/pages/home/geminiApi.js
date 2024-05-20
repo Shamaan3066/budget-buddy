@@ -1,0 +1,1 @@
+export const GeminiAPI = "" //use your api
