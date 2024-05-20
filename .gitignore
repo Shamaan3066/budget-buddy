@@ -3,3 +3,5 @@ node_modules/
 
 # Ignore cache directory within node_modules
 frontend/node_modules/.cache/
+
+.DS_Store
