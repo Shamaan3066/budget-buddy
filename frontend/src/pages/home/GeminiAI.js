@@ -43,7 +43,7 @@ const GeminiAI = ({ transactions }) => {
         try {
             const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiAPI}`, options);
             const data = await response.json();
-            console.log(GeminiAPI);
+            // console.log(GeminiAPI);
             setRecommendation(data.candidates[0].content.parts[0].text);
         } catch (error) {
             console.log(error);

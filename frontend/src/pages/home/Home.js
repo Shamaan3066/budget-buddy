@@ -172,6 +172,7 @@ const Home = () => {
     };
 
     fetchAllTransactions();
+    // eslint-disable-next-line
   }, [refresh, frequency, endDate, type, startDate]);
 
   const handleTableClick = (e) => {

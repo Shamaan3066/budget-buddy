@@ -153,6 +153,7 @@ const Login = () => {
                 className="text-center"
               />
             </h1>
+            <h1 className="text-center text-white">Welcome to Budget Buddy</h1>
             <h2 className="text-white text-center ">Login</h2>
             <Form>
               <Form.Group controlId="formBasicEmail" className="mt-3">
