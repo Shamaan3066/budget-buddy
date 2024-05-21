@@ -6,6 +6,7 @@ import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import randomColor from "randomcolor";
+import { PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from 'recharts';
 
 const Analytics = ({ transactions }) => {
   const [colors, setColors] = useState({});
@@ -60,6 +61,36 @@ const Analytics = ({ transactions }) => {
   const categories = [
     ...new Set(transactions.map(transaction => transaction.category))
   ];
+
+  // Data for pie charts
+  const incomeData = categories.map(category => ({
+    name: category,
+    value: transactions
+      .filter(transaction => transaction.transactionType === "credit" && transaction.category === category)
+      .reduce((acc, transaction) => acc + transaction.amount, 0),
+  }));
+
+  const expenseData = categories.map(category => ({
+    name: category,
+    value: transactions
+      .filter(transaction => transaction.transactionType === "expense" && transaction.category === category)
+      .reduce((acc, transaction) => acc + transaction.amount, 0),
+  }));
+
+  // Data for bar charts
+  const barData = categories.map(category => {
+    const income = transactions
+      .filter(transaction => transaction.transactionType === "credit" && transaction.category === category)
+      .reduce((acc, transaction) => acc + transaction.amount, 0);
+    const expenses = transactions
+      .filter(transaction => transaction.transactionType === "expense" && transaction.category === category)
+      .reduce((acc, transaction) => acc + transaction.amount, 0);
+    return {
+      category,
+      income,
+      expenses,
+    };
+  });
 
   return (
     <Container className="mt-5">
@@ -153,6 +184,78 @@ const Analytics = ({ transactions }) => {
             </div>
           </div>
         </div>
+
+        <div className="col-lg-6 col-md-12 mb-4">
+          <div className="card h-100">
+            <div className="card-header bg-black text-white">
+              <span style={{ fontWeight: "bold" }}>Income Distribution</span>
+            </div>
+            <div className="card-body">
+              <PieChart width={400} height={400}>
+                <Pie
+                  data={incomeData}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={150}
+                  fill="#8884d8"
+                  dataKey="value"
+                  label
+                >
+                  {incomeData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={colors[entry.name]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </div>
+          </div>
+        </div>
+
+        <div className="col-lg-6 col-md-12 mb-4">
+          <div className="card h-100">
+            <div className="card-header bg-black text-white">
+              <span style={{ fontWeight: "bold" }}>Expense Distribution</span>
+            </div>
+            <div className="card-body">
+              <PieChart width={400} height={400}>
+                <Pie
+                  data={expenseData}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={150}
+                  fill="#8884d8"
+                  dataKey="value"
+                  label
+                >
+                  {expenseData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={colors[entry.name]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </div>
+          </div>
+        </div>
+
+        <div className="col-lg-12 col-md-12 mb-4">
+          <div className="card h-100">
+            <div className="card-header bg-black text-white">
+              <span style={{ fontWeight: "bold" }}>Categorywise Income vs Expense</span>
+            </div>
+            <div className="card-body">
+              <BarChart width={800} height={400} data={barData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="category" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="income" fill="green" />
+                <Bar dataKey="expenses" fill="red" />
+              </BarChart>
+            </div>
+          </div>
+        </div>
+
       </Row>
     </Container>
   );
