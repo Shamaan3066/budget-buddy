@@ -7,6 +7,7 @@ import morgan from 'morgan';
 import mongoose from 'mongoose';
 import userRoutes from './routes/userRoutes.js';
 import transactionRoutes from './routes/transactionRoutes.js';
+import budgetRoutes from './routes/budgetRoutes.js';
 
 dotenv.config();
 
@@ -36,6 +37,7 @@ connection.once('open', () => {
 //Routes
 app.use('/auth', userRoutes);
 app.use('/transactions', transactionRoutes);
+app.use('/budgets', budgetRoutes);
 
 //Test
 app.get('/', (req, res) => {

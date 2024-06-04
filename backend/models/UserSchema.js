@@ -18,6 +18,9 @@ const userSchema = new mongoose.Schema({
         required: [true, "Password is required"],
         minlength : [6, "Password Must Be Atleast 6 characters"],
     },
+    budgets: {
+        type: []
+    },
     transactions: {
         type: [],
     },
