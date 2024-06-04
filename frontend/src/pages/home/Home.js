@@ -2,9 +2,8 @@ import React, { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import { useNavigate } from "react-router-dom";
 import { Button, Modal, Form, Container } from "react-bootstrap";
-// import loading from "../../assets/loader.gif";
 import "./home.css";
-import { addTransaction, getTransactions } from "../../utils/ApiRequest";
+import { addTransaction, getBudgetUrl, getTransactions, addBudget } from "../../utils/ApiRequest";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -16,9 +15,9 @@ import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import Analytics from "./Analytics";
 import GeminiAI from "./GeminiAI";
+import TableDatab from "./TableDatab";
 
 const Home = () => {
-  const navigate = useNavigate();
 
   const toastOptions = {
     position: "bottom-right",
@@ -30,8 +29,13 @@ const Home = () => {
     progress: undefined,
     theme: "dark",
   };
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const navigate = useNavigate();
+  const [budgets, setBudgets] = useState([]);
   const [cUser, setcUser] = useState();
   const [show, setShow] = useState(false);
+  const [showb, setshowb] = useState(false);
   const [loading, setLoading] = useState(false);
   const [transactions, setTransactions] = useState([]);
   const [refresh, setRefresh] = useState(false);
@@ -40,6 +44,17 @@ const Home = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [view, setView] = useState("table");
+  const [isCustomCategory, setIsCustomCategory] = useState(false);
+
+  const getBudget = async () => {
+    try {
+      const datab = await axios.post(getBudgetUrl, { userId: user._id });
+      const { budgets } = datab.data; // Extract budgets array from response
+      setBudgets(budgets);
+    } catch (err) {
+      console.error('Error while fetching budgets:', err);
+    }
+  };
 
   const handleStartChange = (date) => {
     setStartDate(date);
@@ -51,12 +66,14 @@ const Home = () => {
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+  const handleCloseb = () => setshowb(false);
+  const handleshowb = () => setshowb(true);
 
   useEffect(() => {
     const firstLog = async () => {
       if (localStorage.getItem("user")) {
         const user = JSON.parse(localStorage.getItem("user"));
-        console.log(user);
+        // console.log(user);
         setcUser(user);
         setRefresh(true);
       } else {
@@ -73,11 +90,18 @@ const Home = () => {
     description: "",
     category: "",
     date: "",
-    transactionType: "",
-    customCategory: "", // Add this line
+    transactionType: "expense",
+    customCategory: "",
   });
-  const [isCustomCategory, setIsCustomCategory] = useState(false); // Add this line
-  
+
+
+  const [bvalues, setbvalues] = useState({
+    amount: "",
+    category: "",
+    endDate: "",
+    startDate: "",
+    customCategory: "",
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -96,9 +120,25 @@ const Home = () => {
     setFrequency(e.target.value);
   };
 
-  const handleSetType = (e) => {
-    setType(e.target.value);
+  const HandleChangeb = (e) => {
+    const { name, value } = e.target;
+
+    if (name === "category" && value === "Other") {
+      setIsCustomCategory(true);
+    } else if (name === "category") {
+      setIsCustomCategory(false);
+    }
+
+    setbvalues({ ...bvalues, [name]: value });
   };
+
+  // const HandleChangebFrequency = (e) => {
+  //   setFrequency(e.target.value);
+  // };
+
+  // const handleSetType = (e) => {
+  //   setType(e.target.value);
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -134,6 +174,43 @@ const Home = () => {
   
     setLoading(false);
   };
+
+  const handleSubmitb = async (e) => {
+    e.preventDefault();
+
+    const { amount, category, endDate, startDate, customCategory } = bvalues;
+
+    if (!amount || !endDate || (!category && !customCategory) || !startDate) {
+      toast.error("Please enter all the fields", toastOptions);
+      return;
+    }
+
+    setLoading(true);
+
+    const selectedCategory = category === "Other" ? customCategory : category;
+
+    const { data } = await axios.post(addBudget, {
+      amount: amount,
+      startDate: startDate,
+      categories: [{
+        category: selectedCategory,
+        amount: amount
+      }
+       ],
+      endDate: endDate,
+      userId: cUser._id,
+    });
+
+    if (data.success) {
+      toast.success(data.message, toastOptions);
+      handleCloseb();
+      setRefresh(!refresh);
+    } else {
+      toast.error(data.message, toastOptions);
+    }
+
+    setLoading(false);
+  };
   
 
   const handleReset = () => {
@@ -152,7 +229,8 @@ const Home = () => {
     const fetchAllTransactions = async () => {
       try {
         setLoading(true);
-        console.log(cUser._id, frequency, startDate, endDate, type);
+        // console.log(cUser._id, frequency, startDate, endDate, type);
+
         const { data } = await axios.post(getTransactions, {
           userId: cUser._id,
           frequency: frequency,
@@ -160,7 +238,7 @@ const Home = () => {
           endDate: endDate,
           type: type,
         });
-        console.log(data);
+        // console.log(data);
   
         setTransactions(data.transactions);
   
@@ -171,6 +249,7 @@ const Home = () => {
       }
     };
 
+    getBudget();
     fetchAllTransactions();
     // eslint-disable-next-line
   }, [refresh, frequency, endDate, type, startDate]);
@@ -214,7 +293,7 @@ const Home = () => {
                 </Form.Group>
               </div>
 
-              <div className="text-white type">
+              {/* <div className="text-white type">
                 <Form.Group className="mb-3" controlId="formSelectFrequency">
                   <Form.Label>Type</Form.Label>
                   <Form.Select
@@ -227,7 +306,7 @@ const Home = () => {
                     <option value="credit">Earned</option>
                   </Form.Select>
                 </Form.Group>
-              </div>
+              </div> */}
 
               <div className="text-white iconBtnBox">
                 <FormatListBulletedIcon
@@ -282,38 +361,20 @@ const Home = () => {
       </Form.Group>
 
       <Form.Group className="mb-3" controlId="formSelect">
-        <Form.Label>Category</Form.Label>
+        <Form.Label>Budget Category</Form.Label>
         <Form.Select
           name="category"
           value={values.category}
           onChange={handleChange}
         >
-          <option value="">Choose...</option>
-          <option value="Groceries">Groceries</option>
-          <option value="Rent">Rent</option>
-          <option value="Salary">Salary</option>
-          <option value="Tip">Tip</option>
-          <option value="Food">Food</option>
-          <option value="Medical">Medical</option>
-          <option value="Utilities">Utilities</option>
-          <option value="Entertainment">Entertainment</option>
-          <option value="Transportation">Transportation</option>
-          <option value="Other">Other</option>
+          <option value="" onClick={getBudget}>Choose...</option>
+          {budgets.flatMap(budget => budget.categories.map(category => (
+            <option key={category._id} value={category.category}>
+              {category.category}
+            </option>
+          )))}
         </Form.Select>
       </Form.Group>
-
-      {isCustomCategory && (
-        <Form.Group className="mb-3" controlId="formCustomCategory">
-          <Form.Label>Custom Category</Form.Label>
-          <Form.Control
-            type="text"
-            name="customCategory"
-            placeholder="Enter your custom category"
-            value={values.customCategory}
-            onChange={handleChange}
-          />
-        </Form.Group>
-      )}
 
       <Form.Group className="mb-3" controlId="formDescription">
         <Form.Label>Description</Form.Label>
@@ -326,7 +387,7 @@ const Home = () => {
         />
       </Form.Group>
 
-      <Form.Group className="mb-3" controlId="formSelect1">
+      {/* <Form.Group className="mb-3" controlId="formSelect1">
         <Form.Label>Transaction Type</Form.Label>
         <Form.Select
           name="transactionType"
@@ -337,7 +398,7 @@ const Home = () => {
           <option value="credit">Income</option>
           <option value="expense">Expense</option>
         </Form.Select>
-      </Form.Group>
+      </Form.Group> */}
 
       <Form.Group className="mb-3" controlId="formDate">
         <Form.Label>Date</Form.Label>
@@ -359,6 +420,92 @@ const Home = () => {
     </Button>
   </Modal.Footer>
 </Modal>
+<Button onClick={handleshowb} className="setBudget" style={{ marginLeft: '10px' }}>
+                  Set Budget
+                </Button>
+                <Button onClick={handleshowb} className="mobileBtn">
+                  +
+                </Button>
+                <Modal show={showb} onHide={handleCloseb} centered>
+                  <Modal.Header closeButton>
+                    <Modal.Title>Add Budget Details</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    <Form>
+                      <Form.Group className="mb-3" controlId="formAmount">
+                        <Form.Label>Amount</Form.Label>
+                        <Form.Control
+                          name="amount"
+                          type="number"
+                          placeholder="Enter your Amount"
+                          value={bvalues.amount}
+                          onChange={HandleChangeb}
+                        />
+                      </Form.Group>
+
+                      <Form.Group className="mb-3" controlId="formSelect">
+                        <Form.Label>Category</Form.Label>
+                        <Form.Select
+                          name="category"
+                          value={bvalues.category}
+                          onChange={HandleChangeb}
+                        >
+                          <option value="">Choose...</option>
+                          <option value="Groceries">Groceries</option>
+                          <option value="Rent">Rent</option>
+                          <option value="Salary">Salary</option>
+                          <option value="Tip">Tip</option>
+                          <option value="Food">Food</option>
+                          <option value="Medical">Medical</option>
+                          <option value="Utilities">Utilities</option>
+                          <option value="Entertainment">Entertainment</option>
+                          <option value="Transportation">Transportation</option>
+                          <option value="Other">Other</option>
+                        </Form.Select>
+                      </Form.Group>
+
+                      {isCustomCategory && (
+                        <Form.Group className="mb-3" controlId="formCustomCategory">
+                          <Form.Label>Custom Category</Form.Label>
+                          <Form.Control
+                            type="text"
+                            name="customCategory"
+                            placeholder="Enter your custom category"
+                            value={bvalues.customCategory}
+                            onChange={HandleChangeb}
+                          />
+                        </Form.Group>
+                      )}
+
+                      <Form.Group className="mb-3" controlId="formDate">
+                        <Form.Label>Start Date</Form.Label>
+                        <DatePicker
+                          selected={bvalues.startDate}
+                          onChange={(date) => setbvalues({ ...bvalues, startDate: date })}
+                          dateFormat="yyyy-MM-dd"
+                          className="form-control"
+                        />
+                      </Form.Group>
+                      <Form.Group className="mb-3" controlId="formDate">
+                        <Form.Label>End Date</Form.Label>
+                        <DatePicker
+                          selected={bvalues.endDate}
+                          onChange={(date) => setbvalues({ ...bvalues, endDate: date })}
+                          dateFormat="yyyy-MM-dd"
+                          className="form-control"
+                        />
+                      </Form.Group>
+                    </Form>
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseb}>
+                      Close
+                    </Button>
+                    <Button variant="primary" onClick={handleSubmitb}>
+                      Submit
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
               </div>
             </div>
             <br style={{ color: "white" }}></br>
@@ -409,11 +556,12 @@ const Home = () => {
             {view === "table" ? (
               <>
                 <TableData data={transactions} user={cUser} />
+                <TableDatab data={budgets} user={cUser} />
               </>
             ) : (
               <>
-                <Analytics transactions={transactions} user={cUser} />
-                <GeminiAI transactions={transactions} loading={loading} />
+                <Analytics transactions={transactions} budgets={budgets} user={cUser} />
+                <GeminiAI transactions={transactions} budgets={budgets} loading={loading}/>
               </>
             )}
             <ToastContainer />

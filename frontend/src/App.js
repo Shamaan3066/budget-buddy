@@ -3,15 +3,14 @@ import "./App.css";
 import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
-// App.js
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Home from './pages/home/Home';
 
 
 
 const App = () => {
+
   return (
-    
       <div className="App">
       <BrowserRouter>
         <Routes>

@@ -94,11 +94,11 @@ const TableData = (props) => {
       <Container>
         <Table responsive="md" className="data-table">
           <thead>
+          <h1>Transaction Table</h1>
             <tr>
               <th>Date</th>
               <th>Title</th>
               <th>Amount</th>
-              <th>Type</th>
               <th>Category</th>
               <th>Action</th>
             </tr>
@@ -109,7 +109,6 @@ const TableData = (props) => {
                 <td>{moment(item.date).format("YYYY-MM-DD")}</td>
                 <td>{item.title}</td>
                 <td>{item.amount}</td>
-                <td>{item.transactionType}</td>
                 <td>{item.category}</td>
                 <td>
                   <div className="icons-handle">
