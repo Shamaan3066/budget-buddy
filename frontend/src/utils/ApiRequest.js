@@ -1,4 +1,5 @@
-export const host = "http://localhost:5001";
+export const host = "budget-buddy-neon.vercel.app";
+// export const host = "http://localhost:5001";
 export const registerAPI = `${host}/auth/register`;
 export const loginAPI = `${host}/auth/login`;
 export const addTransaction = `${host}/transactions/addTransaction`;
