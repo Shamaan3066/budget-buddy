@@ -14,7 +14,7 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT;
 // const allowedOrigin = process.env.ALLOWED_ORIGIN;
-const allowedOrigin = 'https://budget-buddy-app-six.vercel.app';
+const allowedOrigin = 'https://budget-buddy-psi.vercel.app';
 
 //Middlewares
 app.use(express.json());
