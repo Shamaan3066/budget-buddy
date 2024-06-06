@@ -47,13 +47,14 @@
     background-color: #f8f8f8;
 } */
 
-.containerBtn{
+.containerBtn {
     display: flex;
     align-items: center;
     justify-content:center;
     margin-bottom: 20px;
     width: 100%;
-    margin-left: 20px;
+    margin-left: 0px;
+    border-radius: 5px;
 }
 .mobileBtn{
     display: none !important;
@@ -123,4 +124,10 @@
     .containerBtn{
         margin-left: 0px !important;
     }
+}
+
+.markdown-container {
+    background-color: white;
+    border-radius: 5px;
+    padding: 10px;
 }
