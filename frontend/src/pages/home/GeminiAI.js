@@ -1,46 +1,33 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
+import ReactMarkdown from 'react-markdown';
 import './home.css';
-import { GeminiAPI } from "./geminiApi";
 
 const GeminiAI = ({ transactions, budgets }) => {
     const [recommendation, setRecommendation] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const textareaRef = useRef(null);
-    const geminiAPI = GeminiAPI
-
-    const adjustTextareaHeight = () => {
-        const textarea = textareaRef.current;
-        textarea.style.height = "auto";
-        textarea.style.height = `${textarea.scrollHeight}px`;
-    };
-
-    useEffect(() => {
-        adjustTextareaHeight();
-    }, [recommendation]);
+    const geminiAPI = process.env.REACT_APP_GEMINI_API_KEY;  // Ensure your .env variable starts with REACT_APP_
 
     const getFinancialRecommendation = async () => {
-        // console.log(transactions);
         const categoryAmounts = transactions.reduce((acc, transaction) => {
             const { category, amount, date } = transaction;
             if (!acc[category]) {
-              acc[category] = [];
+                acc[category] = [];
             }
             acc[category].push({ date, amount });
             return acc;
-          }, {});
-          const transArr = JSON.stringify(categoryAmounts);
-          console.log(transArr);
-        // console.log(budgets);
-        const budgetDetails = budgets.flatMap(item => 
+        }, {});
+        const transArr = JSON.stringify(categoryAmounts);
+
+        const budgetDetails = budgets.flatMap(item =>
             item.categories.map(cat => ({
-              category: cat.category,
-              amount: cat.amount,
-              startDate: item.startDate,
-              endDate: item.endDate
+                category: cat.category,
+                amount: cat.amount,
+                startDate: item.startDate,
+                endDate: item.endDate
             }))
-          );
-          const budgetArr = JSON.stringify(budgetDetails);
-          console.log(budgetArr);
+        );
+        const budgetArr = JSON.stringify(budgetDetails);
+
         setIsLoading(true);
         const options = {
             method: 'POST',
@@ -63,28 +50,21 @@ const GeminiAI = ({ transactions, budgets }) => {
         try {
             const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiAPI}`, options);
             const data = await response.json();
-            // console.log(GeminiAPI);
             setRecommendation(data.candidates[0].content.parts[0].text);
         } catch (error) {
-            console.log(error);
+            console.error(error);
         } finally {
             setIsLoading(false);
         }
     };
 
     return (
-        <div>
+        <div className="container">
             <button onClick={getFinancialRecommendation} className="containerBtn">
                 {isLoading ? 'Recommending advice from the data...' : 'Get Financial Recommendation'}
             </button>
-            <div>
-                <textarea
-                    ref={textareaRef}
-                    value={recommendation}
-                    readOnly
-                    placeholder="Financial Recommendation"
-                    className="containerBtn"
-                />
+            <div className="markdown-container">
+                <ReactMarkdown>{recommendation}</ReactMarkdown>
             </div>
         </div>
     );
